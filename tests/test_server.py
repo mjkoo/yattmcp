@@ -54,7 +54,13 @@ RAW_TASK: dict[str, Any] = {
     "sortOrder": 12345,
     "items": [
         {"id": "s1", "title": "Milk", "status": 0, "sortOrder": 0},
-        {"id": "s2", "title": "Eggs", "status": 1, "sortOrder": 1, "completedTime": "2025-03-14T10:00:00+0000"},
+        {
+            "id": "s2",
+            "title": "Eggs",
+            "status": 1,
+            "sortOrder": 1,
+            "completedTime": "2025-03-14T10:00:00+0000",
+        },
     ],
 }
 
@@ -154,22 +160,30 @@ class TestGetProjectTasks:
     @pytest.mark.asyncio
     async def test_returns_normalized_tasks(self) -> None:
         client = _make_client()
-        result = _parse(await ticktick_get_project_tasks(project_id="p1", client=client))
+        result = _parse(
+            await ticktick_get_project_tasks(project_id="p1", client=client)
+        )
         assert len(result) == 1
         assert result[0]["priority"] == "high"
         assert result[0]["subtasks"][1]["isCompleted"] is True
 
     @pytest.mark.asyncio
     async def test_empty_project(self) -> None:
-        client = _make_client(project_data={"project": RAW_PROJECT, "tasks": [], "columns": []})
-        result = _parse(await ticktick_get_project_tasks(project_id="p1", client=client))
+        client = _make_client(
+            project_data={"project": RAW_PROJECT, "tasks": [], "columns": []}
+        )
+        result = _parse(
+            await ticktick_get_project_tasks(project_id="p1", client=client)
+        )
         assert result == []
 
     @pytest.mark.asyncio
     async def test_api_error(self) -> None:
         client = _make_client()
         client.get_project_data.side_effect = _http_error(404)
-        result = _parse(await ticktick_get_project_tasks(project_id="bad", client=client))
+        result = _parse(
+            await ticktick_get_project_tasks(project_id="bad", client=client)
+        )
         assert "error" in result
 
 
@@ -234,7 +248,9 @@ class TestGetTask:
     @pytest.mark.asyncio
     async def test_returns_normalized(self) -> None:
         client = _make_client()
-        result = _parse(await ticktick_get_task(project_id="p1", task_id="t1", client=client))
+        result = _parse(
+            await ticktick_get_task(project_id="p1", task_id="t1", client=client)
+        )
         assert result["id"] == "t1"
         assert result["priority"] == "high"
         client.get_task.assert_called_once_with("p1", "t1")
@@ -243,7 +259,9 @@ class TestGetTask:
     async def test_api_error(self) -> None:
         client = _make_client()
         client.get_task.side_effect = _http_error(404)
-        result = _parse(await ticktick_get_task(project_id="p1", task_id="bad", client=client))
+        result = _parse(
+            await ticktick_get_task(project_id="p1", task_id="bad", client=client)
+        )
         assert "error" in result
 
 
@@ -297,8 +315,11 @@ class TestCreateTask:
         client = _make_client()
         result = _parse(
             await ticktick_create_task(
-                title="Test", project_id="p1", priority="urgent",
-                client=client, inbox_id=None,
+                title="Test",
+                project_id="p1",
+                priority="urgent",
+                client=client,
+                inbox_id=None,
             )
         )
         assert "error" in result
@@ -307,8 +328,11 @@ class TestCreateTask:
     async def test_due_date_conversion(self) -> None:
         client = _make_client()
         await ticktick_create_task(
-            title="Test", project_id="p1", due_date="2025-03-15",
-            client=client, inbox_id=None,
+            title="Test",
+            project_id="p1",
+            due_date="2025-03-15",
+            client=client,
+            inbox_id=None,
         )
         call_payload = client.create_task.call_args[0][0]
         assert "2025-03-15" in call_payload["dueDate"]
@@ -318,8 +342,11 @@ class TestCreateTask:
     async def test_due_date_with_time(self) -> None:
         client = _make_client()
         await ticktick_create_task(
-            title="Test", project_id="p1", due_date="2025-03-15T14:00",
-            client=client, inbox_id=None,
+            title="Test",
+            project_id="p1",
+            due_date="2025-03-15T14:00",
+            client=client,
+            inbox_id=None,
         )
         call_payload = client.create_task.call_args[0][0]
         assert call_payload["isAllDay"] is False
@@ -328,8 +355,12 @@ class TestCreateTask:
     async def test_explicit_is_all_day_overrides(self) -> None:
         client = _make_client()
         await ticktick_create_task(
-            title="Test", project_id="p1", due_date="2025-03-15",
-            is_all_day=False, client=client, inbox_id=None,
+            title="Test",
+            project_id="p1",
+            due_date="2025-03-15",
+            is_all_day=False,
+            client=client,
+            inbox_id=None,
         )
         call_payload = client.create_task.call_args[0][0]
         assert call_payload["isAllDay"] is False
@@ -338,12 +369,14 @@ class TestCreateTask:
     async def test_subtasks(self) -> None:
         client = _make_client()
         await ticktick_create_task(
-            title="Test", project_id="p1",
+            title="Test",
+            project_id="p1",
             subtasks=[
                 {"title": "Sub A"},
                 {"title": "Sub B", "isCompleted": True},
             ],
-            client=client, inbox_id=None,
+            client=client,
+            inbox_id=None,
         )
         call_payload = client.create_task.call_args[0][0]
         assert call_payload["items"] == [
@@ -356,8 +389,11 @@ class TestCreateTask:
         client = _make_client()
         result = _parse(
             await ticktick_create_task(
-                title="Test", project_id="p1", due_date="nope",
-                client=client, inbox_id=None,
+                title="Test",
+                project_id="p1",
+                due_date="nope",
+                client=client,
+                inbox_id=None,
             )
         )
         assert "error" in result
@@ -412,7 +448,8 @@ class TestUpdateTask:
     async def test_update_subtasks(self) -> None:
         client = _make_client()
         await ticktick_update_task(
-            task_id="t1", project_id="p1",
+            task_id="t1",
+            project_id="p1",
             subtasks=[{"title": "New sub"}],
             client=client,
         )
@@ -455,9 +492,7 @@ class TestSearchTasks:
     @pytest.mark.asyncio
     async def test_no_filters_returns_all(self) -> None:
         client = _make_client()
-        result = _parse(
-            await ticktick_search_tasks(client=client, inbox_id=None)
-        )
+        result = _parse(await ticktick_search_tasks(client=client, inbox_id=None))
         assert len(result) == 1
         assert result[0]["id"] == "t1"
 

@@ -21,8 +21,23 @@ yattmcp = "yattmcp.cli:app"
 requires = ["uv_build>=0.9.18,<0.10.0"]
 build-backend = "uv_build"
 
+[tool.mypy]
+strict = true
+
+[[tool.mypy.overrides]]
+module = [
+    "fastmcp.*",
+    "httpx.*",
+    "mcp.*",
+    "typer.*",
+    "dotenv.*",
+]
+ignore_missing_imports = true
+
 [dependency-groups]
 dev = [
+    "mypy>=1.15.0",
     "pytest>=9.0.2",
     "pytest-asyncio>=1.3.0",
+    "ruff>=0.11.0",
 ]

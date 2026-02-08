@@ -47,7 +47,9 @@ class TestTickTickClientProjects:
     async def test_list_projects(self, monkeypatch: pytest.MonkeyPatch) -> None:
         projects = [{"id": "p1", "name": "Work"}]
 
-        async def mock_get(self_inner: httpx.AsyncClient, url: str, **kw: object) -> httpx.Response:
+        async def mock_get(
+            self_inner: httpx.AsyncClient, url: str, **kw: object
+        ) -> httpx.Response:
             assert url == "/project"
             return _mock_response(json_data=projects)
 
@@ -61,7 +63,9 @@ class TestTickTickClientProjects:
     async def test_get_project_data(self, monkeypatch: pytest.MonkeyPatch) -> None:
         data = {"project": {"id": "p1", "name": "Work"}, "tasks": [], "columns": []}
 
-        async def mock_get(self_inner: httpx.AsyncClient, url: str, **kw: object) -> httpx.Response:
+        async def mock_get(
+            self_inner: httpx.AsyncClient, url: str, **kw: object
+        ) -> httpx.Response:
             assert "/project/p1/data" in url
             return _mock_response(json_data=data)
 
@@ -75,7 +79,9 @@ class TestTickTickClientProjects:
     async def test_create_project(self, monkeypatch: pytest.MonkeyPatch) -> None:
         created = {"id": "p2", "name": "New"}
 
-        async def mock_post(self_inner: httpx.AsyncClient, url: str, **kw: object) -> httpx.Response:
+        async def mock_post(
+            self_inner: httpx.AsyncClient, url: str, **kw: object
+        ) -> httpx.Response:
             assert url == "/project"
             return _mock_response(json_data=created)
 
@@ -87,7 +93,9 @@ class TestTickTickClientProjects:
 
     @pytest.mark.asyncio
     async def test_delete_project(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        async def mock_delete(self_inner: httpx.AsyncClient, url: str, **kw: object) -> httpx.Response:
+        async def mock_delete(
+            self_inner: httpx.AsyncClient, url: str, **kw: object
+        ) -> httpx.Response:
             assert "/project/p1" in url
             return _mock_response(status_code=200)
 
@@ -98,7 +106,9 @@ class TestTickTickClientProjects:
 
     @pytest.mark.asyncio
     async def test_delete_project_error(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        async def mock_delete(self_inner: httpx.AsyncClient, url: str, **kw: object) -> httpx.Response:
+        async def mock_delete(
+            self_inner: httpx.AsyncClient, url: str, **kw: object
+        ) -> httpx.Response:
             return _mock_response(status_code=404)
 
         monkeypatch.setattr(httpx.AsyncClient, "delete", mock_delete)
@@ -113,7 +123,9 @@ class TestTickTickClientTasks:
     async def test_get_task(self, monkeypatch: pytest.MonkeyPatch) -> None:
         task = {"id": "t1", "title": "Do thing", "projectId": "p1"}
 
-        async def mock_get(self_inner: httpx.AsyncClient, url: str, **kw: object) -> httpx.Response:
+        async def mock_get(
+            self_inner: httpx.AsyncClient, url: str, **kw: object
+        ) -> httpx.Response:
             assert "/project/p1/task/t1" in url
             return _mock_response(json_data=task)
 
@@ -127,7 +139,9 @@ class TestTickTickClientTasks:
     async def test_create_task(self, monkeypatch: pytest.MonkeyPatch) -> None:
         created = {"id": "t2", "title": "New task"}
 
-        async def mock_post(self_inner: httpx.AsyncClient, url: str, **kw: object) -> httpx.Response:
+        async def mock_post(
+            self_inner: httpx.AsyncClient, url: str, **kw: object
+        ) -> httpx.Response:
             assert url == "/task"
             return _mock_response(json_data=created)
 
@@ -141,7 +155,9 @@ class TestTickTickClientTasks:
     async def test_update_task(self, monkeypatch: pytest.MonkeyPatch) -> None:
         updated = {"id": "t1", "title": "Updated"}
 
-        async def mock_post(self_inner: httpx.AsyncClient, url: str, **kw: object) -> httpx.Response:
+        async def mock_post(
+            self_inner: httpx.AsyncClient, url: str, **kw: object
+        ) -> httpx.Response:
             assert "/task/t1" in url
             return _mock_response(json_data=updated)
 
@@ -153,7 +169,9 @@ class TestTickTickClientTasks:
 
     @pytest.mark.asyncio
     async def test_complete_task(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        async def mock_post(self_inner: httpx.AsyncClient, url: str, **kw: object) -> httpx.Response:
+        async def mock_post(
+            self_inner: httpx.AsyncClient, url: str, **kw: object
+        ) -> httpx.Response:
             assert "/project/p1/task/t1/complete" in url
             return _mock_response(status_code=200)
 

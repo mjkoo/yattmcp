@@ -2,6 +2,7 @@
 
 import json
 import os
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Any
@@ -13,7 +14,6 @@ from mcp.types import ToolAnnotations
 
 from yattmcp.client import TickTickClient
 from yattmcp.normalizers import (
-    date_from_api,
     date_to_api,
     normalize_project,
     normalize_task,
@@ -23,7 +23,7 @@ from yattmcp.normalizers import (
 
 
 @asynccontextmanager
-async def lifespan(server: FastMCP):
+async def lifespan(server: FastMCP) -> AsyncIterator[dict[str, Any]]:
     """Manage the TickTickClient lifecycle."""
     api_token = os.environ["TICKTICK_API_TOKEN"]
     inbox_id = os.environ.get("TICKTICK_INBOX_PROJECT_ID", "inbox")
@@ -35,15 +35,15 @@ mcp = FastMCP("yattmcp", lifespan=lifespan)
 
 
 async def get_client(
-    server: FastMCP = CurrentFastMCP(),
+    server: FastMCP = CurrentFastMCP(),  # type: ignore[no-untyped-call]
 ) -> TickTickClient:
-    return server._lifespan_result["client"]
+    return server._lifespan_result["client"]  # type: ignore[index,no-any-return]
 
 
 async def get_inbox_id(
-    server: FastMCP = CurrentFastMCP(),
+    server: FastMCP = CurrentFastMCP(),  # type: ignore[no-untyped-call]
 ) -> str | None:
-    return server._lifespan_result["inbox_project_id"]
+    return server._lifespan_result["inbox_project_id"]  # type: ignore[index,no-any-return]
 
 
 def _error(msg: str) -> str:
@@ -63,8 +63,8 @@ def _ok(data: Any) -> str:
     annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False),
 )
 async def ticktick_list_projects(
-    client: TickTickClient = Depends(get_client),
-    inbox_id: str | None = Depends(get_inbox_id),
+    client: TickTickClient = Depends(get_client),  # type: ignore[arg-type]
+    inbox_id: str | None = Depends(get_inbox_id),  # type: ignore[arg-type]
 ) -> str:
     """List all TickTick projects (lists).
 
@@ -101,7 +101,7 @@ async def ticktick_list_projects(
 )
 async def ticktick_get_project_tasks(
     project_id: str,
-    client: TickTickClient = Depends(get_client),
+    client: TickTickClient = Depends(get_client),  # type: ignore[arg-type]
 ) -> str:
     """Get all active (uncompleted) tasks in a project.
 
@@ -131,7 +131,7 @@ async def ticktick_create_project(
     name: str,
     color: str | None = None,
     view_mode: str | None = None,
-    client: TickTickClient = Depends(get_client),
+    client: TickTickClient = Depends(get_client),  # type: ignore[arg-type]
 ) -> str:
     """Create a new TickTick project (list).
 
@@ -163,7 +163,7 @@ async def ticktick_create_project(
 )
 async def ticktick_delete_project(
     project_id: str,
-    client: TickTickClient = Depends(get_client),
+    client: TickTickClient = Depends(get_client),  # type: ignore[arg-type]
 ) -> str:
     """Permanently delete a TickTick project and ALL its tasks.
 
@@ -190,7 +190,7 @@ async def ticktick_delete_project(
 async def ticktick_get_task(
     project_id: str,
     task_id: str,
-    client: TickTickClient = Depends(get_client),
+    client: TickTickClient = Depends(get_client),  # type: ignore[arg-type]
 ) -> str:
     """Get full details of a single task.
 
@@ -225,8 +225,8 @@ async def ticktick_create_task(
     start_date: str | None = None,
     is_all_day: bool | None = None,
     subtasks: list[dict[str, Any]] | None = None,
-    client: TickTickClient = Depends(get_client),
-    inbox_id: str | None = Depends(get_inbox_id),
+    client: TickTickClient = Depends(get_client),  # type: ignore[arg-type]
+    inbox_id: str | None = Depends(get_inbox_id),  # type: ignore[arg-type]
 ) -> str:
     """Create a new task in TickTick.
 
@@ -319,7 +319,7 @@ async def ticktick_update_task(
     start_date: str | None = None,
     is_all_day: bool | None = None,
     subtasks: list[dict[str, Any]] | None = None,
-    client: TickTickClient = Depends(get_client),
+    client: TickTickClient = Depends(get_client),  # type: ignore[arg-type]
 ) -> str:
     """Update an existing task. Only include fields you want to change.
 
@@ -398,7 +398,7 @@ async def ticktick_update_task(
 async def ticktick_complete_task(
     task_id: str,
     project_id: str,
-    client: TickTickClient = Depends(get_client),
+    client: TickTickClient = Depends(get_client),  # type: ignore[arg-type]
 ) -> str:
     """Mark a task as completed.
 
@@ -430,8 +430,8 @@ async def ticktick_search_tasks(
     priority: str | None = None,
     due_before: str | None = None,
     due_after: str | None = None,
-    client: TickTickClient = Depends(get_client),
-    inbox_id: str | None = Depends(get_inbox_id),
+    client: TickTickClient = Depends(get_client),  # type: ignore[arg-type]
+    inbox_id: str | None = Depends(get_inbox_id),  # type: ignore[arg-type]
 ) -> str:
     """Search and filter tasks across projects.
 

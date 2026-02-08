@@ -1,6 +1,6 @@
 """Async HTTP client for the TickTick Open API."""
 
-from typing import Self
+from typing import Any, Self
 
 import httpx
 
@@ -38,28 +38,33 @@ class TickTickClient:
     @property
     def client(self) -> httpx.AsyncClient:
         if self._client is None:
-            raise RuntimeError("TickTickClient must be used as an async context manager")
+            raise RuntimeError(
+                "TickTickClient must be used as an async context manager"
+            )
         return self._client
 
     # -- Projects --
 
-    async def list_projects(self) -> list[dict]:
+    async def list_projects(self) -> list[dict[str, Any]]:
         """GET /project — list all projects."""
         resp = await self.client.get("/project")
         resp.raise_for_status()
-        return resp.json()
+        result: list[dict[str, Any]] = resp.json()
+        return result
 
-    async def get_project_data(self, project_id: str) -> dict:
+    async def get_project_data(self, project_id: str) -> dict[str, Any]:
         """GET /project/{id}/data — get project with tasks and columns."""
         resp = await self.client.get(f"/project/{project_id}/data")
         resp.raise_for_status()
-        return resp.json()
+        result: dict[str, Any] = resp.json()
+        return result
 
-    async def create_project(self, data: dict) -> dict:
+    async def create_project(self, data: dict[str, Any]) -> dict[str, Any]:
         """POST /project — create a new project."""
         resp = await self.client.post("/project", json=data)
         resp.raise_for_status()
-        return resp.json()
+        result: dict[str, Any] = resp.json()
+        return result
 
     async def delete_project(self, project_id: str) -> None:
         """DELETE /project/{id} — permanently delete a project."""
@@ -68,27 +73,28 @@ class TickTickClient:
 
     # -- Tasks --
 
-    async def get_task(self, project_id: str, task_id: str) -> dict:
+    async def get_task(self, project_id: str, task_id: str) -> dict[str, Any]:
         """GET /project/{pid}/task/{tid} — get a single task."""
         resp = await self.client.get(f"/project/{project_id}/task/{task_id}")
         resp.raise_for_status()
-        return resp.json()
+        result: dict[str, Any] = resp.json()
+        return result
 
-    async def create_task(self, data: dict) -> dict:
+    async def create_task(self, data: dict[str, Any]) -> dict[str, Any]:
         """POST /task — create a new task."""
         resp = await self.client.post("/task", json=data)
         resp.raise_for_status()
-        return resp.json()
+        result: dict[str, Any] = resp.json()
+        return result
 
-    async def update_task(self, task_id: str, data: dict) -> dict:
+    async def update_task(self, task_id: str, data: dict[str, Any]) -> dict[str, Any]:
         """POST /task/{id} — update an existing task."""
         resp = await self.client.post(f"/task/{task_id}", json=data)
         resp.raise_for_status()
-        return resp.json()
+        result: dict[str, Any] = resp.json()
+        return result
 
     async def complete_task(self, project_id: str, task_id: str) -> None:
         """POST /project/{pid}/task/{tid}/complete — mark task as done."""
-        resp = await self.client.post(
-            f"/project/{project_id}/task/{task_id}/complete"
-        )
+        resp = await self.client.post(f"/project/{project_id}/task/{task_id}/complete")
         resp.raise_for_status()
