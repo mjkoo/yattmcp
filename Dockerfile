@@ -17,4 +17,4 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 EXPOSE 8000
 
-ENTRYPOINT ["uv", "run", "yattmcp", "serve", "--transport", "streamable-http"]
+ENTRYPOINT ["uv", "run", "yattmcp", "serve", "--transport", "streamable-http", "--host", "0.0.0.0"]
