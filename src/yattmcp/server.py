@@ -26,9 +26,9 @@ from yattmcp.normalizers import (
 async def lifespan(server: FastMCP) -> AsyncIterator[dict[str, Any]]:
     """Manage the TickTickClient lifecycle."""
     api_token = os.environ["TICKTICK_API_TOKEN"]
-    inbox_id = os.environ.get("TICKTICK_INBOX_PROJECT_ID", "inbox")
+    inbox_project_id = os.environ.get("TICKTICK_INBOX_PROJECT_ID", "inbox")
     async with TickTickClient(api_token) as client:
-        yield {"client": client, "inbox_project_id": inbox_id}
+        yield {"client": client, "inbox_project_id": inbox_project_id}
 
 
 mcp = FastMCP("yattmcp", lifespan=lifespan)
@@ -52,11 +52,6 @@ def _error(msg: str) -> str:
 
 def _ok(data: Any) -> str:
     return json.dumps(data, default=str)
-
-
-# ---------------------------------------------------------------------------
-# 1. ticktick_list_projects
-# ---------------------------------------------------------------------------
 
 
 @mcp.tool(
@@ -91,11 +86,6 @@ async def ticktick_list_projects(
     return _ok(result)
 
 
-# ---------------------------------------------------------------------------
-# 2. ticktick_get_project_tasks
-# ---------------------------------------------------------------------------
-
-
 @mcp.tool(
     annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False),
 )
@@ -117,11 +107,6 @@ async def ticktick_get_project_tasks(
 
     tasks = data.get("tasks", [])
     return _ok([normalize_task(t) for t in tasks])
-
-
-# ---------------------------------------------------------------------------
-# 3. ticktick_create_project
-# ---------------------------------------------------------------------------
 
 
 @mcp.tool(
@@ -153,11 +138,6 @@ async def ticktick_create_project(
     return _ok(normalize_project(result))
 
 
-# ---------------------------------------------------------------------------
-# 4. ticktick_delete_project
-# ---------------------------------------------------------------------------
-
-
 @mcp.tool(
     annotations=ToolAnnotations(destructiveHint=True),
 )
@@ -177,11 +157,6 @@ async def ticktick_delete_project(
         return _error(f"Failed to delete project: {e.response.status_code}")
 
     return _ok({"deleted": True, "projectId": project_id})
-
-
-# ---------------------------------------------------------------------------
-# 5. ticktick_get_task
-# ---------------------------------------------------------------------------
 
 
 @mcp.tool(
@@ -206,11 +181,6 @@ async def ticktick_get_task(
         return _error(f"Failed to get task: {e.response.status_code}")
 
     return _ok(normalize_task(task))
-
-
-# ---------------------------------------------------------------------------
-# 6. ticktick_create_task
-# ---------------------------------------------------------------------------
 
 
 @mcp.tool(
@@ -301,11 +271,6 @@ async def ticktick_create_task(
     return _ok(normalize_task(result))
 
 
-# ---------------------------------------------------------------------------
-# 7. ticktick_update_task
-# ---------------------------------------------------------------------------
-
-
 @mcp.tool(
     annotations=ToolAnnotations(destructiveHint=False, idempotentHint=True),
 )
@@ -387,11 +352,6 @@ async def ticktick_update_task(
     return _ok(normalize_task(result))
 
 
-# ---------------------------------------------------------------------------
-# 8. ticktick_complete_task
-# ---------------------------------------------------------------------------
-
-
 @mcp.tool(
     annotations=ToolAnnotations(destructiveHint=False),
 )
@@ -414,11 +374,6 @@ async def ticktick_complete_task(
         return _error(f"Failed to complete task: {e.response.status_code}")
 
     return _ok({"completed": True, "taskId": task_id})
-
-
-# ---------------------------------------------------------------------------
-# 9. ticktick_search_tasks
-# ---------------------------------------------------------------------------
 
 
 @mcp.tool(
