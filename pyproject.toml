@@ -3,6 +3,8 @@ name = "yattmcp"
 version = "0.1.0"
 description = "Yet Another TickTick MCP"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Maxwell Koo", email = "30420+mjkoo@users.noreply.github.com" }
 ]
